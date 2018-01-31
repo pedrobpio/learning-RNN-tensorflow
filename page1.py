@@ -52,5 +52,5 @@ for current_state input_series:
     current_state = next_state
 
 
-ogits_series = [tf.matmul(state, W2) + b2 for state in states_series] #Broadcasted addition
+logits_series = [tf.matmul(state, W2) + b2 for state in states_series] #Broadcasted addition
 
