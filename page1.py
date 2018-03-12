@@ -28,29 +28,31 @@ batchY_placeholder = tf.placeholder(tf.int32, [batch_size, truncated_backprop_le
 
 init_state = tf.placeholder(tf.float32, [batch_size, state_size])
 
-w = tf.Variables(np.random.rand(state_size+1, state_size), dtype = tf.float32)
-b = tf.Variables(np.zeros(1, num_classes), dtype = tf.float32)
+w = tf.Variable(np.random.rand(state_size+1, state_size), dtype = tf.float32)
+b = tf.Variable(np.zeros((1,state_size)), dtype=tf.float32)
 
-w2 = tf.Variables(np.random.rand(state_size+1, state_size), dtype = tf.float32)
-b2 = tf.Variables(np.zeros(1, num_classes), dtype = tf.float32)
+w2 = tf.Variable(np.random.rand(state_size+1, state_size), dtype = tf.float32)
+b2 = tf.Variable(np.zeros((1, num_classes)), dtype = tf.float32)
+
 
 #unpack columns
 
-input_series = tf.unpack(batchX_placeholder, axis=1)
-labels_series = tf.unpack(batchY_placeholder, axis = 1)
+input_series = tf.unstack(batchX_placeholder, axis=1)
+labels_series = tf.unstack(batchY_placeholder, axis = 1)
 
 #forward pass
 
 current_state = init_state
-state_series = []
-for current_state input_series:
+states_series = []
+for current_input in input_series:
     current_input = tf.reshape(current_input, [batch_size, 1])
     input_and_state_concatenated = tf.concat(1, [current_input, current_state]) #incrising number of columns
 
+
     next_state = tf.tanh(tf.matmul(input_and_state_concatenated, w)+b) #broadcast adition
-    state_series.append(next_state)
+    states_series.append(next_state)
     current_state = next_state
 
 
-logits_series = [tf.matmul(state, W2) + b2 for state in states_series] #Broadcasted addition
+logits_series = [tf.matmul(state, w2) + b2 for state in states_series] #Broadcasted addition
 
